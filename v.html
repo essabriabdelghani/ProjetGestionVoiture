@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Liste des voitures</title>
+  <style>
+     nav {
+      background-color: #64a7c4;
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 20px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      color: #ffcc00;
+    }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
+    .btn { background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+    h1{
+      color: red;
+      font-size: 24PX;
+    }
+    h2{
+      color: green;
+      font-size: 24px;
+    }
+    .ajout{
+      background-color: blue;
+      color: white;
+      border-radius: 5px;
+    }
+    .ajout:hover{
+      background-color: aquamarine;
+    }
+    
+    input{
+      border-radius: 10px;
+      padding: 5px;
+      margin: 5px;
+    }
+    
+    
+    
+    
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="voitures.html">Réservation</a>
+    <a href="contact.html">Contact</a>
+    <a href="register.html">Login</a>
+  </nav>
+
+  <h1>Liste des voitures</h1>
+  
+  <table id="tableVoitures">
+    <thead>
+      <tr>
+        <th>Immatriculation</th>
+        <th>Marque</th>
+        <th>Couleur</th>
+        <th>Carburant</th>
+        <th>Prix/Jour</th>
+        <th>DATE </th>
+        <th>Supprimer</th>
+        <th>Reserver</th>
+        
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <br><br>
+  <label for="">Rechercher</label>
+  <input type="text" id="marqueFiltre"  placeholder="Rechercher par marque" oninput="filtrerVoitures()" />
+  <h2>Ajouter une voiture</h2>
+<form onsubmit="ajouterVoiture(event)">
+  <input type="text" id="immatriculation" placeholder="Immatriculation" required />
+  <input type="text" id="marque" placeholder="Marque" required /><br><br>
+  <input type="text" id="couleur" placeholder="Couleur" required />
+  <input type="text" id="carburant" placeholder="Carburant" required /><br><br>
+  <input type="number" id="prix_jour" placeholder="Prix/Jour" required />
+  <button type="submit" class="ajout">Ajouter</button>
+</form>
+
+<div id="modalReservation" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+  <div style="background:white; margin:5% auto; padding:20px; width:400px; border-radius:10px;">
+    <h3>Réserver la voiture <span id="immatModal"></span></h3>
+    <form onsubmit="confirmerReservation(event)">
+      <input type="hidden" id="voiture_id">
+      
+      <label>Nom complet:</label>
+      <input type="text" id="nomClient" required><br><br>
+      
+      <label>Email:</label>
+      <input type="email" id="emailClient" required><br><br>
+      
+      <label>CIN:</label>
+      <input type="text" id="cinClient" required><br><br>
+      
+      <label>Date début:</label>
+      <input type="date" id="dateDebut" required onchange="calculerPrix()"><br><br>
+      
+      <label>Durée (jours):</label>
+      <input type="number" id="dureeLocation" min="1" required onchange="calculerPrix()"><br><br>
+      
+      <div style="background:#f5f5f5; padding:10px; margin:10px 0;">
+        <p>Date de fin: <span id="dateFin"></span></p>
+        <p>Prix total: <span id="prixTotal"></span> DH</p>
+      </div>
+      
+      <button type="submit" style="background:green; color:white;">Confirmer</button>
+      <button type="button" onclick="fermerModal()" style="background:red; color:white;">Annuler</button>
+    </form>
+  </div>
+</div>
+
+
+
+
+  <script>
+    let T_Voitures = [];
+
+    async function getAllVoitures() {
+      const response = await fetch("getVoitures.php");
+      T_Voitures = await response.json();
+
+      afficherVoitures(T_Voitures);
+    }
+
+    function afficherVoitures(data) {
+  const tbody = document.querySelector("#tableVoitures tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(voiture => {
+    const tr = document.createElement("tr");
+
+    // Si la voiture est réservée, colorer la ligne en vert
+    if (voiture.reserver == 1) {
+      tr.style.backgroundColor = "lightgreen";
+    }
+
+    tr.innerHTML = `
+      <td>${voiture.immatriculation}</td>
+      <td>${voiture.marque}</td>
+      <td>${voiture.couleur}</td>
+      <td>${voiture.carburant}</td>
+      <td>${voiture.prix_jour}</td>
+      <td>${voiture.DATE}</td>
+      <td>
+        <button class="btn" onclick="deleteVoiture('${voiture.immatriculation}')">Supprimer</button>
+      </td>
+      <td>
+        ${voiture.reserver == 0 
+          ? `<button class="btn" onclick="reserverVoiture('${voiture.immatriculation}')">Réserver</button>` 
+          : ""}
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+
+    function deleteVoiture(immatriculation) {
+      fetch(`deleteVoiture.php?immatriculation=${immatriculation}`)
+        .then(() => getAllVoitures());
+    }
+
+    function ajouterVoiture(event) {
+  event.preventDefault(); // Empêche le rechargement
+
+  const data = {
+    immatriculation: document.getElementById("immatriculation").value.trim(),
+    marque: document.getElementById("marque").value.trim(),
+    couleur: document.getElementById("couleur").value.trim(),
+    carburant: document.getElementById("carburant").value.trim(),
+    prix_jour: document.getElementById("prix_jour").value.trim()
+  };
+
+  fetch("ajouterVoiture.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert(msg);
+    document.querySelector("form").reset();
+    getAllVoitures();
+  });
+}
+
+
+    function filtrerVoitures() {
+      const marque = document.getElementById("marqueFiltre").value.trim().toLowerCase();
+      const resultat = T_Voitures.filter(v => v.marque.toLowerCase().includes(marque));
+      afficherVoitures(resultat);
+    }
+    let voitureSelectionnee = null;
+
+function reserverVoiture(immatriculation) {
+  voitureSelectionnee = T_Voitures.find(v => v.immatriculation === immatriculation);
+  
+  document.getElementById("immatModal").textContent = immatriculation;
+  document.getElementById("modalReservation").style.display = "block";
+  
+  // Initialiser la date min à aujourd'hui
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById("dateDebut").min = today;
+}
+
+
+
+function calculerPrix() {
+  if (!voitureSelectionnee) return;
+  
+  const duree = parseInt(document.getElementById("dureeLocation").value) || 0;
+  const dateDebut = document.getElementById("dateDebut").value;
+  
+  if (duree > 0 && dateDebut) {
+    // Calcul date fin
+    const dateFin = new Date(dateDebut);
+    dateFin.setDate(dateFin.getDate() + duree);
+    document.getElementById("dateFin").textContent = dateFin.toLocaleDateString();
+    
+    // Calcul prix total
+    const prixTotal = duree * voitureSelectionnee.prix_jour;
+    document.getElementById("prixTotal").textContent = prixTotal;
+  }
+}
+
+async function confirmerReservation(event) {
+    event.preventDefault();
+    
+    // 1. Récupération des données du formulaire
+    const formData = {
+        immatriculation: voitureSelectionnee.immatriculation,
+        nom: document.getElementById("nomClient").value.trim(),
+        email: document.getElementById("emailClient").value.trim(),
+        cin: document.getElementById("cinClient").value.trim(),
+        date_debut: document.getElementById("dateDebut").value,
+        duree: parseInt(document.getElementById("dureeLocation").value)
+    };
+
+    // 2. Validation côté client
+    if (!formData.date_debut || formData.duree < 1) {
+        alert("Veuillez remplir tous les champs correctement");
+        return;
+    }
+
+    try {
+        // 3. Envoi de la requête
+        const response = await fetch("reserverVoitureComplet.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(formData)
+        });
+
+        // 4. Traitement de la réponse
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Erreur serveur");
+        }
+
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`Réservation #${result.data.reservation_id} confirmée!\nPrix total: ${result.data.prix_total} DH`);
+            fermerModal();
+            getAllVoitures();
+        } else {
+            throw new Error(result.message);
+        }
+
+    } catch (error) {
+        console.error("Erreur:", error);
+        alert(`Échec de la réservation: ${error.message}`);
+        
+        // Optionnel: Afficher plus de détails en mode développement
+        if (confirm("Voir les détails de l'erreur ? (mode debug)")) {
+            console.log("Détails de l'erreur:", error);
+            alert(JSON.stringify(error, null, 2));
+        }
+    }
+}
+
+// Fonction pour fermer le modal
+function fermerModal() {
+    document.getElementById("modalReservation").style.display = "none";
+    document.querySelector("form").reset();
+}
+
+   
+
+    window.onload = getAllVoitures;
+  </script>
+</body>
+</html>

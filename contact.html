@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact</title>
+  <style>
+    nav {
+      background-color: #64a7c4;
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 20px;
+      overflow: hidden;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      color: #ffcc00;
+    }
+   /* Style du body avec image de fond */
+   body {
+    background-image: url('voiture_image.png');
+    /*background-size: cover;*/
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    color: #fff;
+  }
+  
+  /* Overlay sombre pour meilleure lisibilité */
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
+
+.container {
+  text-align: center;
+}
+
+.profile-pic {
+  margin-bottom: -40px; /* chevauche légèrement le formulaire */
+  z-index: 1;
+}
+
+.profile-pic img {
+  width: 200px;
+  height: 200px;
+  border-radius: 100%;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  background-color: white;
+}
+p{
+  font-size: 24px;
+  color: black;
+
+}
+
+/* Formulaire */
+form {
+  background: #979393;
+  padding: 40px 20px 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  width: 400px;
+  margin: 0 auto;
+}
+
+input, textarea {
+  width: 95%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: #007BFF;
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+#error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+
+  
+  </style>
+</head>
+<body>
+  <body>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="voitures.html">Réservation</a>
+      <a href="contact.html">Contact</a>
+      <a href="register.html">Login</a>
+    </nav>
+    <div class="container">
+      <div class="profile-pic">
+        <img src="image.jpg" alt="Image de contact">
+      </div><br><br>
+      <p>Use contact</p>
+  
+      <form id="contactForm" method="POST">
+        <h2>Send us a Message</h2>
+  
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <input type="text" name="phone" placeholder="Phone Number" required>
+        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+        
+        <button type="submit">Send Message</button>
+        <p id="error"></p>
+      </form>
+    </div>
+  <script src="contact.js"></script>
+</body>
+</html>

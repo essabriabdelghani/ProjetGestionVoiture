@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+  <title>Connexion</title>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="verifier_connexion.php">Réservation</a>
+    <a href="verifier_connexion.php">Contact</a>
+    <a href="register.html">Login</a>
+  </nav>
+  <div class="form-container">
+    <h2>Connexion</h2>
+    <div id="erreur-message" style="color: red; text-align: center;"></div>
+    <form action="login.php" method="POST">
+      <input type="email" name="email" id="email" placeholder="E-mail" >
+      <div id="erreurEmail" class="erreur" style="color: red;"></div>
+      <input type="password" name="mot_de_passe" id="password" placeholder="Mot de passe" >
+      <div id="erreurPass" class="erreur" style="color: red;"></div>
+      
+
+      <button type="submit" onclick="return connexion()">Se Connecter</button>
+    </form>
+    <p>N’avez-vous pas de compte ? <a href="register.html">Inscription</a></p>
+  </div>
+  <!--
+  <div id="chatbox" >
+  
+    <div id="messages" ></div>
+    <input type="text" id="userInput" placeholder="Écrivez un message..."
+     onkeydown="if(event.key==='Enter') sendMessage()"  />
+  </div>
+  -->
+  <div id="chatbot">
+    <div id="chatbot-header">Demandez à un chatbot de vous aider </div>
+    <div id="chatbot-body"></div>
+    <input type="text" id="chatbot-input" placeholder="Posez votre question...">
+    <br><br><br>
+    <select name="" id="" >
+      <option value="" disabled selected>Choisissez une question rapide </option>
+      <option value="bonjour">Bonjour</option>
+      <option value="comment réserver">Comment réserver</option>
+      <option value="quels documents faut-il">Quels documents faut-il</option>
+      <option value="horaires d’ouverture">Horaires d’ouverture</option>
+      <option value="merci">Merci</option>
+    </select>
+  </div>
+ 
+  <script src="chatbot.js"></script>
+  
+</body>
+</html>
