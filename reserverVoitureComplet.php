@@ -1,28 +1,25 @@
 <?php
 session_start();
 
-// Vérifier que la session contient l'email
 if (!isset($_SESSION['email_utilisateur'])) {
     echo json_encode([
         'success' => false,
-        'message' => 'Erreur : email de la connexion manquant.'
+        'message' => 'Erreur : email de session manquant.'
     ]);
     exit;
 }
 
-// Récupérer les données JSON envoyées
+// Comparaison avec l'email saisi dans le formulaire
 $input = json_decode(file_get_contents('php://input'), true);
-$inputEmail = $input['email'] ?? null;
-$sessionEmail = $_SESSION['email_utilisateur'];
 
-// Comparer les emails
-if (strtolower($inputEmail) !== strtolower($sessionEmail)) {
+if ($input['email'] !== $_SESSION['email_utilisateur']) {
     echo json_encode([
         'success' => false,
         'message' => 'Erreur : l\'email saisi ne correspond pas à celui de la connexion.'
     ]);
     exit;
 }
+
 
 
 
